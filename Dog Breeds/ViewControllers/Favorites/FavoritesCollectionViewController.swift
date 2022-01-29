@@ -8,7 +8,9 @@
 import UIKit
 
 class FavoritesCollectionViewController: UICollectionViewController {
+    private let searchController = UISearchController(searchResultsController: nil)
     private var list: [DogImage] = []
+    private var filteredList: [DogImage] = []
     
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -21,6 +23,11 @@ class FavoritesCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Favorites"
+        
+        self.searchController.searchResultsUpdater = self
+        self.searchController.hidesNavigationBarDuringPresentation = false
+        self.searchController.searchBar.sizeToFit()
+        self.navigationItem.searchController = self.searchController
 
         // Register cell classes
         self.collectionView!.register(
@@ -44,7 +51,7 @@ class FavoritesCollectionViewController: UICollectionViewController {
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.list.count
+        return self.searchController.isActive ? self.filteredList.count : self.list.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -53,7 +60,8 @@ class FavoritesCollectionViewController: UICollectionViewController {
             for: indexPath
         ) as! DogImageCardViewCell
         
-        let dog = self.list[indexPath.row]
+        
+        let dog = self.searchController.isActive ? self.filteredList[indexPath.row] : self.list[indexPath.row]
         cell.dog = dog
         cell.isFavorite = true
         cell.showLabel = true
@@ -76,6 +84,17 @@ extension FavoritesCollectionViewController: UICollectionViewDelegateFlowLayout 
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         return CGSize(width: self.view.bounds.width - 32, height: 400)
+    }
+}
+
+extension FavoritesCollectionViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard self.list.count != 0, let text = searchController.searchBar.text else {
+            return
+        }
+        
+        self.filteredList = text.isEmpty ? self.list : self.list.filter({ $0.breed.lowercased().contains(text.lowercased()) })
+        self.collectionView.reloadData()
     }
 }
 
