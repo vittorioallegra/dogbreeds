@@ -71,7 +71,19 @@ private extension DogBreedCollectionViewController {
         DogServiceApi.getDogBreedImages(dogBreed: self.dogBreed) { response, error in
             DispatchQueue.main.async {
                 guard let result = response else {
-                    // TODO: Show error message
+                    let alert = UIAlertController(
+                        title: "Error",
+                        message: error?.localizedDescription ?? "",
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(
+                        title: "Close",
+                        style: .default,
+                        handler: { _ in
+                            alert.dismiss(animated: true)
+                        }
+                    ))
+                    self.present(alert, animated: true)
                     return
                 }
 
