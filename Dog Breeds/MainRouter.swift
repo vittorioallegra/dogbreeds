@@ -27,16 +27,18 @@ class MainRouter: NSObject {
 
 private extension MainRouter {
     static func getRootViewController() -> UITabBarController {
-        let dogBreedsViewController = DogBreedsViewController()
-        let listNavigationController = UINavigationController(rootViewController: dogBreedsViewController)
-        listNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: Tab.search.rawValue)
+        let searchTableViewController = SearchTableViewController()
+        let searchNavigationController = UINavigationController(rootViewController: searchTableViewController)
+        searchNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: Tab.search.rawValue)
+        searchNavigationController.navigationBar.prefersLargeTitles = true
         
         let favoritesViewController = FavoritesViewController()
         let favoritesNavigationController = UINavigationController(rootViewController: favoritesViewController)
         favoritesNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: Tab.favorites.rawValue)
+        favoritesNavigationController.navigationBar.prefersLargeTitles = true
         
         let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [listNavigationController, favoritesNavigationController]
+        tabBarController.viewControllers = [searchNavigationController, favoritesNavigationController]
         
         return tabBarController
     }
