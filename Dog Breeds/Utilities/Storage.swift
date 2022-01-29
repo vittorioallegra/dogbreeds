@@ -18,9 +18,11 @@ struct Storage {
         return favorites
     }
     
-    static func saveFavorite(_ favorite: String) {
+    static func toggleFavorite(_ favorite: String) {
         var favorites = Self.getFavorites()
-        if !favorites.contains(favorite) {
+        if favorites.contains(favorite) {
+            favorites.removeAll(where: { $0 == favorite })
+        } else {
             favorites.append(favorite)
         }
         UserDefaults.standard.set(favorites, forKey: Self.key)

@@ -51,7 +51,6 @@ class SearchTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let breed = self.searchController.isActive ? self.filteredList[indexPath.row] : self.list[indexPath.row]
-        print("Did select \(breed)")
         self.delegate?.didSelectDogBreed(breed)
     }
 }

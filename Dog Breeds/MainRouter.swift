@@ -9,25 +9,22 @@ import Foundation
 import UIKit
 
 class MainRouter: NSObject {
-    private let rootViewController: UITabBarController
+    private let rootViewController = UITabBarController()
     private enum Tab: Int {
         case search
         case favorites
     }
     
-    override init() {
-        self.rootViewController = Self.getRootViewController()
-        super.init()
-    }
-    
     func getRootViewController() -> UIViewController {
+        self.initRootViewController()
         return self.rootViewController
     }
 }
 
 private extension MainRouter {
-    static func getRootViewController() -> UITabBarController {
+    func initRootViewController() {
         let searchTableViewController = SearchTableViewController()
+        searchTableViewController.delegate = self
         let searchNavigationController = UINavigationController(rootViewController: searchTableViewController)
         searchNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: Tab.search.rawValue)
         searchNavigationController.navigationBar.prefersLargeTitles = true
@@ -37,9 +34,20 @@ private extension MainRouter {
         favoritesNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: Tab.favorites.rawValue)
         favoritesNavigationController.navigationBar.prefersLargeTitles = true
         
-        let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [searchNavigationController, favoritesNavigationController]
-        
-        return tabBarController
+        self.rootViewController.viewControllers = [searchNavigationController, favoritesNavigationController]
+    }
+    
+    private func push(_ viewController: UIViewController, in tab: Tab) {
+        DispatchQueue.main.async {
+            let navigationController = self.rootViewController.viewControllers![tab.rawValue] as! UINavigationController
+            navigationController.pushViewController(viewController, animated: true)
+        }
+    }
+}
+
+extension MainRouter: SearchTableViewDelegate {
+    func didSelectDogBreed(_ breed: String) {
+        let dogBreedCollectionVC = DogBreedCollectionViewController(dogBreed: breed)
+        self.push(dogBreedCollectionVC, in: .search)
     }
 }
