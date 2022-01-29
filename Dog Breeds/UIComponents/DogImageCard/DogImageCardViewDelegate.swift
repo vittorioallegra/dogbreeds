@@ -8,5 +8,5 @@
 import Foundation
 
 protocol DogImageCardViewDelegate: AnyObject {
-    func didToggleFavorite(_ image: String)
+    func didToggleFavorite(_ dog: DogImage)
 }

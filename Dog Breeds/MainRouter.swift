@@ -23,18 +23,18 @@ class MainRouter: NSObject {
 
 private extension MainRouter {
     func initRootViewController() {
-        let searchTableViewController = SearchTableViewController()
-        searchTableViewController.delegate = self
-        let searchNavigationController = UINavigationController(rootViewController: searchTableViewController)
-        searchNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: Tab.search.rawValue)
-        searchNavigationController.navigationBar.prefersLargeTitles = true
+        let searchTableVC = SearchTableViewController()
+        searchTableVC.delegate = self
+        let searchNC = UINavigationController(rootViewController: searchTableVC)
+        searchNC.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: Tab.search.rawValue)
+        searchNC.navigationBar.prefersLargeTitles = true
         
-        let favoritesViewController = FavoritesViewController()
-        let favoritesNavigationController = UINavigationController(rootViewController: favoritesViewController)
-        favoritesNavigationController.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: Tab.favorites.rawValue)
-        favoritesNavigationController.navigationBar.prefersLargeTitles = true
+        let favoritesCollectionVC = FavoritesCollectionViewController()
+        let favoritesNC = UINavigationController(rootViewController: favoritesCollectionVC)
+        favoritesNC.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: Tab.favorites.rawValue)
+        favoritesNC.navigationBar.prefersLargeTitles = true
         
-        self.rootViewController.viewControllers = [searchNavigationController, favoritesNavigationController]
+        self.rootViewController.viewControllers = [searchNC, favoritesNC]
     }
     
     private func push(_ viewController: UIViewController, in tab: Tab) {

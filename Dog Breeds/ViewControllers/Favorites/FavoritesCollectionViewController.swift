@@ -1,5 +1,5 @@
 //
-//  DogBreedCollectionViewController.swift
+//  FavoritesCollectionViewController.swift
 //  Dog Breeds
 //
 //  Created by Vittorio Allegra on 29/01/22.
@@ -7,14 +7,10 @@
 
 import UIKit
 
-class DogBreedCollectionViewController: UICollectionViewController {
+class FavoritesCollectionViewController: UICollectionViewController {
     private var list: [DogImage] = []
-    private var favorites: [DogImage] = []
     
-    private let dogBreed: String
-    
-    init(dogBreed: String) {
-        self.dogBreed = dogBreed
+    init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
     }
     
@@ -24,16 +20,20 @@ class DogBreedCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = self.dogBreed
+        self.title = "Favorites"
 
         // Register cell classes
         self.collectionView!.register(
             DogImageCardViewCell.self,
             forCellWithReuseIdentifier: DogImageCardViewCell.reuseIdentifier
         )
-
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         self.loadFavorites()
-        self.loadDogBreedImagesList()
+        self.collectionView.reloadData()
     }
 
     // MARK: UICollectionViewDataSource
@@ -55,34 +55,21 @@ class DogBreedCollectionViewController: UICollectionViewController {
         
         let dog = self.list[indexPath.row]
         cell.dog = dog
-        cell.isFavorite = self.favorites.contains(where: { $0.image == dog.image })
+        cell.isFavorite = true
+        cell.showLabel = true
         cell.delegate = self
     
         return cell
     }
 }
 
-private extension DogBreedCollectionViewController {
+private extension FavoritesCollectionViewController {
     func loadFavorites() {
-        self.favorites = Storage.getFavorites()
-    }
-    
-    func loadDogBreedImagesList() {
-        DogServiceApi.getDogBreedImages(dogBreed: self.dogBreed) { response, error in
-            DispatchQueue.main.async {
-                guard let result = response else {
-                    // TODO: Show error message
-                    return
-                }
-
-                self.list = result.map({ DogImage(breed: self.dogBreed, image: $0) })
-                self.collectionView.reloadData()
-            }
-        }
+        self.list = Storage.getFavorites()
     }
 }
 
-extension DogBreedCollectionViewController: UICollectionViewDelegateFlowLayout {
+extension FavoritesCollectionViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -92,7 +79,7 @@ extension DogBreedCollectionViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension DogBreedCollectionViewController: DogImageCardViewDelegate {
+extension FavoritesCollectionViewController: DogImageCardViewDelegate {
     func didToggleFavorite(_ dog: DogImage) {
         Storage.toggleFavorite(dog)
         self.loadFavorites()
