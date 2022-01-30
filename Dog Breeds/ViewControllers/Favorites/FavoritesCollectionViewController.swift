@@ -9,9 +9,7 @@ import UIKit
 
 class FavoritesCollectionViewController: UICollectionViewController {
     private let searchController = DogBreedSearchController()
-    private var favorites: [DogImage] = []
     private var selectedBreed: DogBreed?
-    private var filteredFavorites: [DogImage] = []
     
     var list: [DogBreed] = [] { didSet { self.loadSearchOptions() } }
     
@@ -40,7 +38,6 @@ class FavoritesCollectionViewController: UICollectionViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.loadFavorites()
         self.collectionView.reloadData()
     }
 
@@ -57,9 +54,7 @@ class FavoritesCollectionViewController: UICollectionViewController {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        return self.selectedBreed == nil
-            ? self.favorites.count
-            : self.filteredFavorites.count
+        return self.getFavorites().count
     }
 
     override func collectionView(
@@ -72,9 +67,7 @@ class FavoritesCollectionViewController: UICollectionViewController {
         ) as! DogImageCardViewCell
         
         
-        let dog = self.selectedBreed == nil
-            ? self.favorites[indexPath.row]
-            : self.filteredFavorites[indexPath.row]
+        let dog = self.getFavorites()[indexPath.row]
         cell.dog = dog
         cell.isFavorite = true
         cell.showLabel = true
@@ -89,8 +82,11 @@ private extension FavoritesCollectionViewController {
         self.searchController.searchOptions = self.list
     }
     
-    func loadFavorites() {
-        self.favorites = Storage.getFavorites()
+    func getFavorites() -> [DogImage] {
+        let favorites = Storage.getFavorites()
+        return self.selectedBreed == nil
+            ? favorites
+            : favorites.filter({ $0.breed == self.selectedBreed })
     }
 }
 
@@ -118,9 +114,6 @@ extension FavoritesCollectionViewController: UICollectionViewDelegateFlowLayout 
 extension FavoritesCollectionViewController: DogBreedSearchDelegate {
     func didSelectOption(_ option: DogBreed?) {
         self.selectedBreed = option
-        self.filteredFavorites = option == nil
-            ? self.favorites
-            : self.favorites.filter({ $0.breed.lowercased().contains(option!.lowercased()) })
         self.collectionView.reloadData()
     }
 }
@@ -128,7 +121,6 @@ extension FavoritesCollectionViewController: DogBreedSearchDelegate {
 extension FavoritesCollectionViewController: DogImageCardViewDelegate {
     func didToggleFavorite(_ dog: DogImage) {
         Storage.toggleFavorite(dog)
-        self.loadFavorites()
         self.collectionView.reloadData()
     }
 }

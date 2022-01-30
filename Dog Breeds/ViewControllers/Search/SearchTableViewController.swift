@@ -12,7 +12,7 @@ class SearchTableViewController: UITableViewController {
     
     private let reuseIdentifier = "TableCell"
     private let searchController = UISearchController(searchResultsController: nil)
-    private var filteredList: [DogBreed] = []
+    private var searchText: String = ""
     
     var list: [DogBreed] = [] { didSet { self.loadDogBreedsList() } }
     
@@ -43,9 +43,7 @@ class SearchTableViewController: UITableViewController {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        return self.searchController.isActive
-            ? self.filteredList.count
-            : self.list.count
+        return self.getDogBreedsList().count
     }
 
     override func tableView(
@@ -57,9 +55,7 @@ class SearchTableViewController: UITableViewController {
             for: indexPath
         )
         
-        let breed = self.searchController.isActive
-            ? self.filteredList[indexPath.row]
-            : self.list[indexPath.row]
+        let breed = self.getDogBreedsList()[indexPath.row]
         cell.textLabel?.text = breed.capitalized
         cell.accessoryType = .disclosureIndicator
 
@@ -70,9 +66,7 @@ class SearchTableViewController: UITableViewController {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        let breed = self.searchController.isActive
-            ? self.filteredList[indexPath.row]
-            : self.list[indexPath.row]
+        let breed = self.getDogBreedsList()[indexPath.row]
         self.delegate?.didSelectDogBreed(breed)
     }
 }
@@ -82,6 +76,12 @@ private extension SearchTableViewController {
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
+    }
+    
+    func getDogBreedsList() -> [DogBreed] {
+        return self.searchText.isEmpty
+            ? self.list
+            : self.list.filter({ $0.lowercased().contains(self.searchText.lowercased()) })
     }
 }
 
@@ -94,9 +94,7 @@ extension SearchTableViewController: UISearchResultsUpdating {
             return
         }
         
-        self.filteredList = text.isEmpty
-            ? self.list
-            : self.list.filter({ $0.lowercased().contains(text.lowercased()) })
+        self.searchText = text
         self.tableView.reloadData()
     }
 }

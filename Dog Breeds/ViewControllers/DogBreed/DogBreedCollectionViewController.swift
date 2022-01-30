@@ -11,8 +11,6 @@ class DogBreedCollectionViewController: UICollectionViewController {
     var delegate: DogBreedCollectionViewDelegate?
     
     private var list: [DogImage] = []
-    private var favorites: [DogImage] = []
-    
     private let dogBreed: DogBreed
     
     init(dogBreed: DogBreed) {
@@ -34,8 +32,13 @@ class DogBreedCollectionViewController: UICollectionViewController {
             forCellWithReuseIdentifier: DogImageCardViewCell.reuseIdentifier
         )
 
-        self.loadFavorites()
         self.loadDogBreedImagesList()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.collectionView.reloadData()
     }
 
     // MARK: UICollectionViewDataSource
@@ -65,7 +68,7 @@ class DogBreedCollectionViewController: UICollectionViewController {
         
         let dog = self.list[indexPath.row]
         cell.dog = dog
-        cell.isFavorite = self.favorites.contains(where: { $0.image == dog.image })
+        cell.isFavorite = Storage.getFavorites().contains(where: { $0.image == dog.image })
         cell.delegate = self
     
         return cell
@@ -73,10 +76,6 @@ class DogBreedCollectionViewController: UICollectionViewController {
 }
 
 private extension DogBreedCollectionViewController {
-    func loadFavorites() {
-        self.favorites = Storage.getFavorites()
-    }
-    
     func loadDogBreedImagesList() {
         self.delegate?.setLoading(true)
         
@@ -120,7 +119,6 @@ extension DogBreedCollectionViewController: UICollectionViewDelegateFlowLayout {
 extension DogBreedCollectionViewController: DogImageCardViewDelegate {
     func didToggleFavorite(_ dog: DogImage) {
         Storage.toggleFavorite(dog)
-        self.loadFavorites()
         self.collectionView.reloadData()
     }
 }
