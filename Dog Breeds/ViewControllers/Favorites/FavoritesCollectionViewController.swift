@@ -8,11 +8,12 @@
 import UIKit
 
 class FavoritesCollectionViewController: UICollectionViewController {
-    private let searchController = UISearchController(searchResultsController: nil)
+    private let searchController = DogBreedSearchController()
     private var favorites: [DogImage] = []
+    private var selectedBreed: DogBreed?
     private var filteredFavorites: [DogImage] = []
     
-    var list: [DogBreed] = []
+    var list: [DogBreed] = [] { didSet { self.loadSearchOptions() } }
     
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -26,9 +27,7 @@ class FavoritesCollectionViewController: UICollectionViewController {
         super.viewDidLoad()
         self.title = "Favorites"
         
-        self.searchController.searchResultsUpdater = self
-        self.searchController.hidesNavigationBarDuringPresentation = false
-        self.searchController.searchBar.sizeToFit()
+        self.searchController.searchDelegate = self
         self.navigationItem.searchController = self.searchController
 
         // Register cell classes
@@ -58,9 +57,9 @@ class FavoritesCollectionViewController: UICollectionViewController {
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        return self.searchController.isActive
-            ? self.filteredFavorites.count
-            : self.favorites.count
+        return self.selectedBreed == nil
+            ? self.favorites.count
+            : self.filteredFavorites.count
     }
 
     override func collectionView(
@@ -73,9 +72,9 @@ class FavoritesCollectionViewController: UICollectionViewController {
         ) as! DogImageCardViewCell
         
         
-        let dog = self.searchController.isActive
-            ? self.filteredFavorites[indexPath.row]
-            : self.favorites[indexPath.row]
+        let dog = self.selectedBreed == nil
+            ? self.favorites[indexPath.row]
+            : self.filteredFavorites[indexPath.row]
         cell.dog = dog
         cell.isFavorite = true
         cell.showLabel = true
@@ -86,6 +85,10 @@ class FavoritesCollectionViewController: UICollectionViewController {
 }
 
 private extension FavoritesCollectionViewController {
+    func loadSearchOptions() {
+        self.searchController.searchOptions = self.list
+    }
+    
     func loadFavorites() {
         self.favorites = Storage.getFavorites()
     }
@@ -112,18 +115,12 @@ extension FavoritesCollectionViewController: UICollectionViewDelegateFlowLayout 
     }
 }
 
-extension FavoritesCollectionViewController: UISearchResultsUpdating {
-    func updateSearchResults(
-        for searchController: UISearchController
-    ) {
-        guard self.favorites.count != 0,
-              let text = searchController.searchBar.text else {
-            return
-        }
-        
-        self.filteredFavorites = text.isEmpty
+extension FavoritesCollectionViewController: DogBreedSearchDelegate {
+    func didSelectOption(_ option: DogBreed?) {
+        self.selectedBreed = option
+        self.filteredFavorites = option == nil
             ? self.favorites
-            : self.favorites.filter({ $0.breed.lowercased().contains(text.lowercased()) })
+            : self.favorites.filter({ $0.breed.lowercased().contains(option!.lowercased()) })
         self.collectionView.reloadData()
     }
 }
