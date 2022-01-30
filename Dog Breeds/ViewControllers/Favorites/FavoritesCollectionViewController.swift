@@ -19,6 +19,7 @@ class FavoritesCollectionViewController: BaseCollectionViewController {
         
         self.searchController.searchDelegate = self
         self.navigationItem.searchController = self.searchController
+        self.navigationItem.hidesSearchBarWhenScrolling = false
 
         self.collectionView.register(
             DogImageCardViewCell.self,
