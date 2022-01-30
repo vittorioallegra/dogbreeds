@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DogBreedCollectionViewController: UICollectionViewController {
+class DogBreedCollectionViewController: BaseCollectionViewController {
     var delegate: DogBreedCollectionViewDelegate?
     
     private var list: [DogImage] = []
@@ -15,7 +15,7 @@ class DogBreedCollectionViewController: UICollectionViewController {
     
     init(dogBreed: DogBreed) {
         self.dogBreed = dogBreed
-        super.init(collectionViewLayout: UICollectionViewFlowLayout())
+        super.init()
     }
     
     required init?(coder: NSCoder) {
@@ -97,27 +97,6 @@ private extension DogBreedCollectionViewController {
                 self.collectionView.refreshControl?.endRefreshing()
             }
         }
-    }
-}
-
-extension DogBreedCollectionViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        return CGSize(
-            width: self.view.bounds.width - Settings.padding * 2,
-            height: Settings.cardHeight
-        )
-    }
-    
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt section: Int
-    ) -> CGFloat {
-        return Settings.padding
     }
 }
 

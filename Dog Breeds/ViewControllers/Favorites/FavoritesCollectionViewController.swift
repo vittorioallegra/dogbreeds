@@ -7,19 +7,11 @@
 
 import UIKit
 
-class FavoritesCollectionViewController: UICollectionViewController {
+class FavoritesCollectionViewController: BaseCollectionViewController {
     private let searchController = DogBreedSearchController()
     private var selectedBreed: DogBreed?
     
     var list: [DogBreed] = [] { didSet { self.loadSearchOptions() } }
-    
-    init() {
-        super.init(collectionViewLayout: UICollectionViewFlowLayout())
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,27 +78,6 @@ private extension FavoritesCollectionViewController {
         return self.selectedBreed == nil
             ? favorites
             : favorites.filter({ $0.breed == self.selectedBreed })
-    }
-}
-
-extension FavoritesCollectionViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        return CGSize(
-            width: self.view.bounds.width - Settings.padding * 2,
-            height: Settings.cardHeight
-        )
-    }
-    
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt section: Int
-    ) -> CGFloat {
-        return Settings.padding
     }
 }
 
