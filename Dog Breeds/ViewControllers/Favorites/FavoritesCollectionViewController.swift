@@ -9,8 +9,10 @@ import UIKit
 
 class FavoritesCollectionViewController: UICollectionViewController {
     private let searchController = UISearchController(searchResultsController: nil)
-    private var list: [DogImage] = []
-    private var filteredList: [DogImage] = []
+    private var favorites: [DogImage] = []
+    private var filteredFavorites: [DogImage] = []
+    
+    var list: [DogBreed] = []
     
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -30,7 +32,7 @@ class FavoritesCollectionViewController: UICollectionViewController {
         self.navigationItem.searchController = self.searchController
 
         // Register cell classes
-        self.collectionView!.register(
+        self.collectionView.register(
             DogImageCardViewCell.self,
             forCellWithReuseIdentifier: DogImageCardViewCell.reuseIdentifier
         )
@@ -45,23 +47,35 @@ class FavoritesCollectionViewController: UICollectionViewController {
 
     // MARK: UICollectionViewDataSource
 
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
+    override func numberOfSections(
+        in collectionView: UICollectionView
+    ) -> Int {
         return 1
     }
 
 
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.searchController.isActive ? self.filteredList.count : self.list.count
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
+        return self.searchController.isActive
+            ? self.filteredFavorites.count
+            : self.favorites.count
     }
 
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: DogImageCardViewCell.reuseIdentifier,
             for: indexPath
         ) as! DogImageCardViewCell
         
         
-        let dog = self.searchController.isActive ? self.filteredList[indexPath.row] : self.list[indexPath.row]
+        let dog = self.searchController.isActive
+            ? self.filteredFavorites[indexPath.row]
+            : self.favorites[indexPath.row]
         cell.dog = dog
         cell.isFavorite = true
         cell.showLabel = true
@@ -73,7 +87,7 @@ class FavoritesCollectionViewController: UICollectionViewController {
 
 private extension FavoritesCollectionViewController {
     func loadFavorites() {
-        self.list = Storage.getFavorites()
+        self.favorites = Storage.getFavorites()
     }
 }
 
@@ -83,17 +97,33 @@ extension FavoritesCollectionViewController: UICollectionViewDelegateFlowLayout 
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        return CGSize(width: self.view.bounds.width - 32, height: 400)
+        return CGSize(
+            width: self.view.bounds.width - Settings.padding * 2,
+            height: Settings.cardHeight
+        )
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        return Settings.padding
     }
 }
 
 extension FavoritesCollectionViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard self.list.count != 0, let text = searchController.searchBar.text else {
+    func updateSearchResults(
+        for searchController: UISearchController
+    ) {
+        guard self.favorites.count != 0,
+              let text = searchController.searchBar.text else {
             return
         }
         
-        self.filteredList = text.isEmpty ? self.list : self.list.filter({ $0.breed.lowercased().contains(text.lowercased()) })
+        self.filteredFavorites = text.isEmpty
+            ? self.favorites
+            : self.favorites.filter({ $0.breed.lowercased().contains(text.lowercased()) })
         self.collectionView.reloadData()
     }
 }

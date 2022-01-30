@@ -8,12 +8,14 @@
 import UIKit
 
 class DogBreedCollectionViewController: UICollectionViewController {
+    var delegate: DogBreedCollectionViewDelegate?
+    
     private var list: [DogImage] = []
     private var favorites: [DogImage] = []
     
-    private let dogBreed: String
+    private let dogBreed: DogBreed
     
-    init(dogBreed: String) {
+    init(dogBreed: DogBreed) {
         self.dogBreed = dogBreed
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
     }
@@ -24,7 +26,7 @@ class DogBreedCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = self.dogBreed
+        self.title = self.dogBreed.capitalized
 
         // Register cell classes
         self.collectionView!.register(
@@ -38,16 +40,24 @@ class DogBreedCollectionViewController: UICollectionViewController {
 
     // MARK: UICollectionViewDataSource
 
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
+    override func numberOfSections(
+        in collectionView: UICollectionView
+    ) -> Int {
         return 1
     }
 
 
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         return self.list.count
     }
 
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    override func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: DogImageCardViewCell.reuseIdentifier,
             for: indexPath
@@ -68,22 +78,14 @@ private extension DogBreedCollectionViewController {
     }
     
     func loadDogBreedImagesList() {
+        self.delegate?.setLoading(true)
+        
         DogServiceApi.getDogBreedImages(dogBreed: self.dogBreed) { response, error in
+            self.delegate?.setLoading(false)
+            
             DispatchQueue.main.async {
                 guard let result = response else {
-                    let alert = UIAlertController(
-                        title: "Error",
-                        message: error?.localizedDescription ?? "",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(
-                        title: "Close",
-                        style: .default,
-                        handler: { _ in
-                            alert.dismiss(animated: true)
-                        }
-                    ))
-                    self.present(alert, animated: true)
+                    self.delegate?.didReceiveError(error)
                     return
                 }
 
@@ -100,7 +102,18 @@ extension DogBreedCollectionViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        return CGSize(width: self.view.bounds.width - 32, height: 400)
+        return CGSize(
+            width: self.view.bounds.width - Settings.padding * 2,
+            height: Settings.cardHeight
+        )
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        return Settings.padding
     }
 }
 

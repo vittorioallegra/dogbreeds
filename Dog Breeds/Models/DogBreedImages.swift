@@ -8,6 +8,6 @@
 import Foundation
 
 struct DogBreedImages: Codable {
-    let message: [String]
+    let message: [DogImageURL]
     let status: String
 }

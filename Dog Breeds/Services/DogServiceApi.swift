@@ -10,7 +10,7 @@ import UIKit
 struct DogServiceApi {
     static let baseURL = "https://dog.ceo/api"
     
-    static func getDogBreeds(_ completion: @escaping ([String]?, Error?) -> Void) {
+    static func getDogBreeds(_ completion: @escaping ([DogBreed]?, Error?) -> Void) {
         let url = URL(string: "\(Self.baseURL)/breeds/list/all")!
         
         RestClient.dataTask(with: url) { result, error in
@@ -24,7 +24,7 @@ struct DogServiceApi {
         }
     }
     
-    static func getDogBreedImages(dogBreed: String, _ completion: @escaping ([String]?, Error?) -> Void) {
+    static func getDogBreedImages(dogBreed: String, _ completion: @escaping ([DogImageURL]?, Error?) -> Void) {
         let url = URL(string: "\(Self.baseURL)/breed/\(dogBreed)/images/random/10")!
         
         RestClient.dataTask(with: url) { result, error in

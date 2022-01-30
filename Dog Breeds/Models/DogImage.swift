@@ -8,10 +8,10 @@
 import Foundation
 
 struct DogImage: Codable {
-    let breed: String
-    let image: String
+    let breed: DogBreed
+    let image: DogImageURL
     
-    init(breed: String, image: String) {
+    init(breed: DogBreed, image: DogImageURL) {
         self.breed = breed
         self.image = image
     }

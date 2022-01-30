@@ -9,24 +9,27 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let window: UIWindow!
-    let appRouter: MainRouter!
-    
-    override init() {
-        self.window = UIWindow(frame: UIScreen.main.bounds)
-        self.appRouter = MainRouter()
-        
-        super.init()
-    }
+    var window: UIWindow?
 
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         // Override point for customization after application launch.
-        self.window.rootViewController = self.appRouter.getRootViewController()
-        self.window.makeKeyAndVisible()
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        self.window?.rootViewController = TabBarController()
+        self.window?.makeKeyAndVisible()
         
         return true
+    }
+}
+
+extension AppDelegate {
+    static var shared: AppDelegate {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            fatalError("Could not retrieve appDelegate instance")
+        }
+        
+        return appDelegate
     }
 }

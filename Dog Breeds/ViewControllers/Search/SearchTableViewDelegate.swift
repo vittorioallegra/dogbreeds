@@ -8,5 +8,5 @@
 import Foundation
 
 protocol SearchTableViewDelegate: AnyObject {
-    func didSelectDogBreed(_ breed: String)
+    func didSelectDogBreed(_ breed: DogBreed)
 }

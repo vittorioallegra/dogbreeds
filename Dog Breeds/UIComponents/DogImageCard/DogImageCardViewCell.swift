@@ -16,9 +16,7 @@ class DogImageCardViewCell: UICollectionViewCell {
     private let favoriteButton = UIButton()
     private let breedLabel = DogImageCardLabel()
     
-    private let shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7).cgColor
     private let cornerRadius: CGFloat = 4
-    private let padding: CGFloat = 16
     
     var dog: DogImage? { didSet { self.loadImage() } }
     var isFavorite: Bool = false { didSet { self.setFavoriteButtonImage() } }
@@ -39,9 +37,9 @@ private extension DogImageCardViewCell {
     func initView() {
         self.layer.borderWidth = 1
         self.layer.cornerRadius = self.cornerRadius
-        self.layer.borderColor = self.shadowColor
+        self.layer.borderColor = Settings.shadowColor.cgColor
         
-        self.layer.shadowColor = self.shadowColor
+        self.layer.shadowColor = Settings.shadowColor.cgColor
         self.layer.shadowOpacity = 1
         self.layer.shadowRadius = self.cornerRadius
         self.layer.shadowOffset = CGSize(width: 0, height: self.cornerRadius)
@@ -52,7 +50,7 @@ private extension DogImageCardViewCell {
     }
     
     func addImageView() {
-        self.imageView.contentMode = .scaleAspectFill
+        self.imageView.contentMode = .scaleToFill
         self.imageView.clipsToBounds = true
         self.imageView.translatesAutoresizingMaskIntoConstraints = false
         self.imageView.layer.cornerRadius = self.cornerRadius
@@ -73,10 +71,10 @@ private extension DogImageCardViewCell {
         self.favoriteButton.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(self.favoriteButton)
         NSLayoutConstraint.activate([
-            self.favoriteButton.topAnchor.constraint(equalTo: self.topAnchor, constant: self.padding),
-            self.favoriteButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -self.padding),
-            self.favoriteButton.widthAnchor.constraint(equalToConstant: self.padding * 2),
-            self.favoriteButton.heightAnchor.constraint(equalToConstant: self.padding * 2)
+            self.favoriteButton.topAnchor.constraint(equalTo: self.topAnchor, constant: Settings.padding),
+            self.favoriteButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -Settings.padding),
+            self.favoriteButton.widthAnchor.constraint(equalToConstant: Settings.padding * 2),
+            self.favoriteButton.heightAnchor.constraint(equalToConstant: Settings.padding * 2)
         ])
     }
     
@@ -92,7 +90,7 @@ private extension DogImageCardViewCell {
             self.breedLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             self.breedLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             self.breedLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            self.breedLabel.heightAnchor.constraint(equalToConstant: self.padding * 3)
+            self.breedLabel.heightAnchor.constraint(equalToConstant: Settings.padding * 3)
         ])
     }
     
@@ -108,7 +106,7 @@ private extension DogImageCardViewCell {
             return
         }
         
-        self.breedLabel.text = dog.breed
+        self.breedLabel.text = dog.breed.capitalized
         if let data = try? Data(contentsOf: URL(string: dog.image)!) {
             self.imageView.image = UIImage(data: data)
         }

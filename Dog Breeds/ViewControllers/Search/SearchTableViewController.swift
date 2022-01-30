@@ -12,9 +12,10 @@ class SearchTableViewController: UITableViewController {
     
     private let reuseIdentifier = "TableCell"
     private let searchController = UISearchController(searchResultsController: nil)
-    private var list: [String] = []
-    private var filteredList: [String] = []
-
+    private var filteredList: [DogBreed] = []
+    
+    var list: [DogBreed] = [] { didSet { self.loadDogBreedsList() } }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Search"
@@ -24,72 +25,78 @@ class SearchTableViewController: UITableViewController {
         self.searchController.searchBar.sizeToFit()
         self.navigationItem.searchController = self.searchController
         
-        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: self.reuseIdentifier)
-
-        self.loadDogBreedsList()
+        self.tableView.register(
+            UITableViewCell.self,
+            forCellReuseIdentifier: self.reuseIdentifier
+        )
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    override func numberOfSections(
+        in tableView: UITableView
+    ) -> Int {
         return 1
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.searchController.isActive ? self.filteredList.count : self.list.count
+    override func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
+        return self.searchController.isActive
+            ? self.filteredList.count
+            : self.list.count
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: self.reuseIdentifier, for: indexPath)
+    override func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: self.reuseIdentifier,
+            for: indexPath
+        )
         
-        let breed = self.searchController.isActive ? self.filteredList[indexPath.row] : self.list[indexPath.row]
-        cell.textLabel?.text = breed
+        let breed = self.searchController.isActive
+            ? self.filteredList[indexPath.row]
+            : self.list[indexPath.row]
+        cell.textLabel?.text = breed.capitalized
         cell.accessoryType = .disclosureIndicator
 
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let breed = self.searchController.isActive ? self.filteredList[indexPath.row] : self.list[indexPath.row]
+    override func tableView(
+        _ tableView: UITableView,
+        didSelectRowAt indexPath: IndexPath
+    ) {
+        let breed = self.searchController.isActive
+            ? self.filteredList[indexPath.row]
+            : self.list[indexPath.row]
         self.delegate?.didSelectDogBreed(breed)
     }
 }
 
 private extension SearchTableViewController {
     func loadDogBreedsList() {
-        DogServiceApi.getDogBreeds { response, error in
-            DispatchQueue.main.async {
-                guard let result = response else {
-                    let alert = UIAlertController(
-                        title: "Error",
-                        message: error?.localizedDescription ?? "",
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(
-                        title: "Close",
-                        style: .default,
-                        handler: { _ in
-                            alert.dismiss(animated: true)
-                        }
-                    ))
-                    self.present(alert, animated: true)
-                    return
-                }
-
-                self.list = result
-                self.tableView.reloadData()
-            }
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
         }
     }
 }
 
 extension SearchTableViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard self.list.count != 0, let text = searchController.searchBar.text else {
+    func updateSearchResults(
+        for searchController: UISearchController
+    ) {
+        guard self.list.count != 0,
+              let text = searchController.searchBar.text else {
             return
         }
         
-        self.filteredList = text.isEmpty ? self.list : self.list.filter({ $0.lowercased().contains(text.lowercased()) })
+        self.filteredList = text.isEmpty
+            ? self.list
+            : self.list.filter({ $0.lowercased().contains(text.lowercased()) })
         self.tableView.reloadData()
     }
 }

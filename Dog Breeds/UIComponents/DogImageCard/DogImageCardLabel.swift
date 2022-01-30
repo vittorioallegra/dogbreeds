@@ -8,14 +8,12 @@
 import UIKit
 
 class DogImageCardLabel: UILabel {
-    let padding: CGFloat = 16
-    
     override func drawText(in rect: CGRect) {
         let insets = UIEdgeInsets.init(
             top: 0,
-            left: self.padding,
+            left: Settings.padding,
             bottom: 0,
-            right: self.padding
+            right: Settings.padding
         )
         super.drawText(in: rect.inset(by: insets))
     }
@@ -23,7 +21,7 @@ class DogImageCardLabel: UILabel {
     override var intrinsicContentSize: CGSize {
         let size = super.intrinsicContentSize
         return CGSize(
-            width: size.width + self.padding * 2,
+            width: size.width + Settings.padding * 2,
             height: size.height
         )
     }

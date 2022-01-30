@@ -8,6 +8,6 @@
 import Foundation
 
 struct DogBreeds: Codable {
-    let message: [String: [String]]
+    let message: [DogBreed: [DogSubBreed]]
     let status: String
 }
