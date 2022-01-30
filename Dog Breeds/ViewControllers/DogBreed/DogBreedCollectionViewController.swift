@@ -26,11 +26,14 @@ class DogBreedCollectionViewController: UICollectionViewController {
         super.viewDidLoad()
         self.title = self.dogBreed.capitalized
 
-        // Register cell classes
-        self.collectionView!.register(
+        self.collectionView.register(
             DogImageCardViewCell.self,
             forCellWithReuseIdentifier: DogImageCardViewCell.reuseIdentifier
         )
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(self.loadDogBreedImagesList), for: .valueChanged)
+        self.collectionView.refreshControl = refreshControl
 
         self.loadDogBreedImagesList()
     }
@@ -76,6 +79,7 @@ class DogBreedCollectionViewController: UICollectionViewController {
 }
 
 private extension DogBreedCollectionViewController {
+    @objc
     func loadDogBreedImagesList() {
         self.delegate?.setLoading(true)
         
@@ -90,6 +94,7 @@ private extension DogBreedCollectionViewController {
 
                 self.list = result.map({ DogImage(breed: self.dogBreed, image: $0) })
                 self.collectionView.reloadData()
+                self.collectionView.refreshControl?.endRefreshing()
             }
         }
     }

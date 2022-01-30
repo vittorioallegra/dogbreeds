@@ -28,7 +28,6 @@ class FavoritesCollectionViewController: UICollectionViewController {
         self.searchController.searchDelegate = self
         self.navigationItem.searchController = self.searchController
 
-        // Register cell classes
         self.collectionView.register(
             DogImageCardViewCell.self,
             forCellWithReuseIdentifier: DogImageCardViewCell.reuseIdentifier
