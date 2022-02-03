@@ -45,15 +45,12 @@ private extension DogBreedSearchController {
 
 extension DogBreedSearchController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
+        self._searchResultsController.searchText = searchController.searchBar.text ?? ""
         self.showsSearchResultsController = searchController.searchBar.isFirstResponder
     }
 }
 
 extension DogBreedSearchController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self._searchResultsController.searchText = searchText
-    }
-    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.searchBar.resignFirstResponder()
         self.searchBar.text = nil

@@ -48,9 +48,7 @@ class DogBreedSearchResultsController: UITableViewController {
         _ tableView: UITableView,
         numberOfRowsInSection section: Int
     ) -> Int {
-        return self.searchText.isEmpty
-            ? self.searchOptions.count
-            : self.filteredSearchOptions.count
+        return self.getSearchOptions().count
     }
 
     override func tableView(
@@ -62,9 +60,7 @@ class DogBreedSearchResultsController: UITableViewController {
             for: indexPath
         )
         
-        let breed = self.searchText.isEmpty
-            ? self.searchOptions[indexPath.row]
-            : self.filteredSearchOptions[indexPath.row]
+        let breed = self.getSearchOptions()[indexPath.row]
         cell.textLabel?.text = breed.capitalized
         cell.accessoryType = .disclosureIndicator
 
@@ -75,9 +71,7 @@ class DogBreedSearchResultsController: UITableViewController {
         _ tableView: UITableView,
         didSelectRowAt indexPath: IndexPath
     ) {
-        let breed = self.searchText.isEmpty
-            ? self.searchOptions[indexPath.row]
-            : self.filteredSearchOptions[indexPath.row]
+        let breed = self.getSearchOptions()[indexPath.row]
         self.delegate?.didSelectOption(breed)
     }
 }
@@ -96,5 +90,11 @@ private extension DogBreedSearchResultsController {
                 : self.searchOptions.filter({ $0.lowercased().contains(self.searchText.lowercased()) })
             self.tableView.reloadData()
         }
+    }
+    
+    func getSearchOptions() -> [DogBreed] {
+        return self.searchText.isEmpty
+            ? self.searchOptions
+            : self.filteredSearchOptions
     }
 }
