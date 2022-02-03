@@ -8,7 +8,7 @@
 import UIKit
 
 class DogBreedCollectionViewController: BaseCollectionViewController {
-    var delegate: DogBreedCollectionViewDelegate?
+    weak var delegate: DogBreedCollectionViewDelegate?
     
     private var list: [DogImage] = []
     private let dogBreed: DogBreed

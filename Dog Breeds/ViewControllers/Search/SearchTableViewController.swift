@@ -8,7 +8,7 @@
 import UIKit
 
 class SearchTableViewController: UITableViewController {
-    var delegate: SearchTableViewDelegate?
+    weak var delegate: SearchTableViewDelegate?
     
     private let reuseIdentifier = "TableCell"
     private let searchController = UISearchController(searchResultsController: nil)

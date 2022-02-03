@@ -12,7 +12,7 @@ protocol DogBreedSearchDelegate: AnyObject {
 }
 
 class DogBreedSearchController: UISearchController {
-    var searchDelegate: DogBreedSearchDelegate?
+    weak var searchDelegate: DogBreedSearchDelegate?
     var searchOptions: [DogBreed] = [] { didSet { self.loadSearchOptions() } }
     
     private let _searchResultsController = DogBreedSearchResultsController()

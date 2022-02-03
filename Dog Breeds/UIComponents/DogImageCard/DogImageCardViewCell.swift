@@ -8,7 +8,7 @@
 import UIKit
 
 class DogImageCardViewCell: UICollectionViewCell {
-    var delegate: DogImageCardViewDelegate?
+    weak var delegate: DogImageCardViewDelegate?
     
     static let reuseIdentifier = "DogImageCardView"
     
